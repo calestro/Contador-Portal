@@ -1,15 +1,16 @@
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 void setup()
 {
-  
+  int entrada = 0 + EEPROM.read(entrada);
+  int saida = 0 + EEPROM.read(saida);
+  int entrada
 }
 
 void loop()
 {
-  int entrada = 0;
-  int saida = 0;
-  
+
   lcd.begin(20, 4);
 
   pinMode(7,INPUT);
@@ -41,6 +42,7 @@ void loop()
         delay(200);
         if(digitalRead(8)){
           entrada++;
+          EEPROM.write(entrada,entrada);
           delay(1000);
           break;
         }
@@ -61,6 +63,7 @@ void loop()
         delay(200);
         if(digitalRead(7)){
           saida++;
+          EEPROM.write(saida,saida);
           delay(1000);
           break;
         }
@@ -76,3 +79,4 @@ void loop()
       }
     }
 }}
+
