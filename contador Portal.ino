@@ -1,24 +1,42 @@
 #include <LiquidCrystal.h>
 #include <EEPROM.h>
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+int entrada = EEPROM.read("entrada");
+int saida = EEPROM.read("saida");
+int one = 7;
+int two = 8;
 void setup()
 {
-  int entrada = 0 + EEPROM.read(entrada);
-  int saida = 0 + EEPROM.read(saida);
-  int entrada
+pinMode(1,INPUT_PULLUP);
+pinMode(0,INPUT_PULLUP);
+lcd.setCursor(0,0);
+lcd.print("RFID BRASIL");
+lcd.setCursor(0,1);
+lcd.print("Vesão 1.0.3");
+lcd.setCursor(0,3);
+lcd.print("Iniciando");
+delay(1000);
+lcd.clear();
 }
 
-void loop()
-{
+void loop(){
 
+
+  if(EEPROM.read("entrada") == 250){
+    EEPROM.write("entrada",0);
+  }
+
+  
+  if(EEPROM.read("saida") == 255){
+    EEPROM.write("saida",0);  
+  }
+  
+  
+  
   lcd.begin(20, 4);
 
-  pinMode(7,INPUT);
-  pinMode(8,INPUT);
-
   for(;;){
-    Serial.begin(9600);
-  
+    reset();
     lcd.setCursor(0,0);
     lcd.print("Entrada: ");
     lcd.setCursor(10,0);
@@ -29,24 +47,27 @@ void loop()
     lcd.print(saida);
 
     int i = 0;
+
+
     
-    if(digitalRead(7) && digitalRead(8)){
+    if(digitalRead(one) && digitalRead(two)){
       delay(500);
     }
     
+  
+
     
-    
-    else if(digitalRead(7)){
-    
+    else if(digitalRead(one)){
       while (true){
+        reset();
         delay(200);
-        if(digitalRead(8)){
+        if(digitalRead(two)){
           entrada++;
-          EEPROM.write(entrada,entrada);
+          EEPROM.write("entrada",entrada);
           delay(1000);
           break;
         }
-        else if(digitalRead(8) && digitalRead(7)){
+        else if(digitalRead(two) && digitalRead(one)){
           break;
         }
         else{
@@ -58,16 +79,17 @@ void loop()
       }
     }
 
-    else if(digitalRead(8)){
+    else if(digitalRead(two)){
       while (true){
+        reset();
         delay(200);
-        if(digitalRead(7)){
+        if(digitalRead(one)){
           saida++;
-          EEPROM.write(saida,saida);
+          EEPROM.write("saida",saida);
           delay(1000);
           break;
         }
-        else if(digitalRead(8) && digitalRead(7)){
+        else if(digitalRead(two) && digitalRead(one)){
           break;
         }
         else{
@@ -80,3 +102,56 @@ void loop()
     }
 }}
 
+void reset(){
+if(digitalRead(1) == LOW){
+  lcd.clear();
+  entrada = 0;
+  saida = 0;
+  EEPROM.write("entrada",0);
+  EEPROM.write("saida",0);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Resetando");
+  delay(500);
+  lcd.clear();
+  delay(500);
+  lcd.print("Resetando");
+  delay(500);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Entrada: ");
+  lcd.setCursor(10,0);
+    lcd.print(entrada);
+    lcd.setCursor(0,3);
+    lcd.print("Saida: ");
+    lcd.setCursor(10,3);
+    lcd.print(saida);
+  }
+  if(digitalRead(0) == LOW){
+    lcd.clear();
+    if (one == 7){
+      one = 8;
+      two = 7;
+    }
+    else{
+      one = 7;
+      two = 8;
+    }
+  lcd.setCursor(0,0);
+  lcd.print("Mudando de Lado");
+  delay(500);
+  lcd.clear();
+  delay(500);
+  lcd.print("Mudando de Lado");
+  delay(500);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Entrada: ");
+  lcd.setCursor(10,0);
+  lcd.print(entrada);
+  lcd.setCursor(0,3);
+  lcd.print("Saida: ");
+  lcd.setCursor(10,3);
+  lcd.print(saida);
+  }
+}
