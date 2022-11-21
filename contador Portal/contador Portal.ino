@@ -1,10 +1,48 @@
 #include <LiquidCrystal.h>
 #include <EEPROM.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <float.h>
+#include <string.h>
+
+#define b 256 // Representation of max int value in 1 byte  => (0xFF) ([11111111])
+
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 int entrada = EEPROM.read("entrada");
 int saida = EEPROM.read("saida");
 int one = 7;
 int two = 8;
+
+void saveValue(unsigned int value, string address[4]){
+
+  unsigned char bytes[4];
+
+  bytes[0] = (value >> 24) & 0xFF;
+  bytes[1] = (value >> 16) & 0xFF;
+  bytes[2] = (value >> 8) & 0xFF; 
+  bytes[3] = value & 0xFF;   
+
+  for(int i = 0; i < 4; i++){
+    EEPROM.write(address[i], bytes[i]);
+  }
+  
+}
+
+unsigned int getValue(string address[4]){
+
+  unsigned char bytes[4];
+
+  for(int i = 0; i < 4; i++){
+    bytes[i] = EEPROM.read(address[i]);
+  }
+
+  unsigned int reconvert = bytes[3] + (bytes[2] * b) + ((bytes[1] * b) * b) + (((bytes[0] * b) * b) * b);
+
+  return reconvert;
+
+}
+
 void setup()
 {
 pinMode(1,INPUT_PULLUP);
