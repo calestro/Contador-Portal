@@ -8,6 +8,17 @@
 
 #define b 256 // Representation of max int value in 1 byte  => (0xFF) ([11111111])
 
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+int one = 7;
+int two = 8;
+int entradaArray[4]= {1, 2, 3, 4};
+int saidaArray[4]={5, 6, 7, 8};
+int entrada = 0;
+int saida = 0;
+
+
+
 void saveValue(int value, int address[4]){
 
   unsigned char bytes[4];
@@ -41,39 +52,39 @@ void setEntrada(){
   int i = 0;
   while(i != 300){
     i++;
-    if (!(digitalRead(two))){
+    Serial.print(i);
+    Serial.print("\n");
+    if ((digitalRead(two))){
       Serial.print("cai entrada\n");
       entrada++;
       saveValue(entrada,entradaArray);
       break;
     }
+    if(i == 299){
+      break;
+    }
   }
-  delay(1000);
+  delay(500);
 }
 
 void setSaida(){
   int i = 0;
   while(i != 300){
     i++;
-    if (!(digitalRead(one))){
+    Serial.print(i);
+    Serial.print("\n");
+    if ((digitalRead(one))){
       Serial.print("cai saida\n");
       saida++;
       saveValue(saida,saidaArray);
       break;
     }
+    if(i == 299){
+      break;
+    }
   }
-  delay(1000);
+  delay(500);
 }
-
-
-
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
-int one = 7;
-int two = 8;
-int entradaArray[4]= {1, 2, 3, 4};
-int saidaArray[4]={5, 6, 7, 8};
-int entrada = 0;
-int saida = 0;
 
 void setup(){
   
@@ -91,13 +102,12 @@ void loop(){
     lcd.setCursor(0,0);
     lcd.print("RFID BRASIL ");
     lcd.setCursor(0,1);
-    lcd.print("Contador de Portal");
+    lcd.print("Contador de Fluxo");
     lcd.setCursor(0,3);
-    lcd.print("Versao: 1.2.0");
+    lcd.print("Versao: 1.3.0");
     delay(5000);
     lcd.clear();
  
-
     for(;;){
         reset();
         lcd.setCursor(0,0);
@@ -110,10 +120,12 @@ void loop(){
         lcd.print(saida);
 
         if(digitalRead(one)){
+          Serial.print("Esperando entrada\n");
           setEntrada();
         }
 
         if(digitalRead(two)){
+          Serial.print("Esperando saida\n");
           setSaida();
         }
     }
@@ -173,3 +185,4 @@ if(digitalRead(1) == LOW){
     lcd.setCursor(10,3);
     lcd.print(saida);
   }
+}
